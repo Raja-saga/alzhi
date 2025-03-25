@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const MedicineScreen = ({ navigation }) => {
+const TasksScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Medicine</Text>
-      {/* Your medicine content here */}
+      <Text style={styles.title}>Tasks</Text>
+      {/* Your tasks content here */}
 
       {/* Fixed Bottom Navigation */}
       <View style={styles.bottomNav}>
@@ -58,4 +58,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MedicineScreen;
+export default TasksScreen;

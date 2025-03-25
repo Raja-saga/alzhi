@@ -1,75 +1,28 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import HomeScreen from "./screens/HomeScreen";
-import DashboardScreen from "./screens/DashboardScreen";
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './screens/HomeScreen';
+import DashboardScreen from './screens/DashboardScreen';
+import LocationScreen from './screens/LocationScreen';
+import ReminderScreen from './screens/ReminderScreen';
+import GalleryScreen from './screens/GalleryScreen';
+import MedicineScreen from './screens/MedicineScreen';
+import TasksScreen from './screens/TasksScreen';
 
 const Stack = createStackNavigator();
-
-const FirstScreen = ({ navigation }) => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Alzheimer Amigo</Text>
-      
-      {/* Home and Dashboard Buttons */}
-      <View style={styles.bottomContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Text style={styles.buttonText}>Home</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Dashboard")}
-        >
-          <Text style={styles.buttonText}>Dashboard</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="FirstScreen">
-        <Stack.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
+        <Stack.Screen name="Location" component={LocationScreen} />
+        <Stack.Screen name="Reminder" component={ReminderScreen} />
+        <Stack.Screen name="Gallery" component={GalleryScreen} />
+        <Stack.Screen name="Medicine" component={MedicineScreen} />
+        <Stack.Screen name="Tasks" component={TasksScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  bottomContainer: {
-    flexDirection: "row",
-    position: "absolute",
-    bottom: 30,
-  },
-  button: {
-    backgroundColor: "#007BFF",
-    padding: 15,
-    marginHorizontal: 10,
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-});
