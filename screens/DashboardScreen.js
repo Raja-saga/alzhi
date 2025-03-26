@@ -63,7 +63,6 @@ const DashboardScreen = ({ navigation }) => {
             <Text style={styles.buttonText}>📸 Gallery</Text>
           </TouchableOpacity>
         </View>
-
       </ScrollView>
 
       {/* Bottom Navigation with fixed Home and Dashboard buttons */}
@@ -88,7 +87,7 @@ const DashboardScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a1a", // Dark theme
+    backgroundColor: "#87CEFA", // Light Sky Blue background color
     paddingBottom: 70, // Padding to make space for bottom navigation
   },
   scrollContainer: {
@@ -98,7 +97,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "#333",
     marginBottom: 20,
   },
   row: {
