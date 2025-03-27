@@ -1,21 +1,26 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const BottomNav = ({ navigation }) => {
+
+import { SafeAreaView } from 'react-native';
+
+const BottomNav = ({ navigation, currentRoute }) => {
   return (
     <View style={styles.bottomNav}>
-      {/* Home Button - Left Half */}
-      <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate("Home")}>
-        <Text style={styles.navText}>Home</Text>
-      </TouchableOpacity>
-
-      {/* Dashboard Button - Right Half */}
-      <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate("Dashboard")}>
-        <Text style={styles.navText}>Dashboard</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+        <Text style={[
+          styles.navText,
+          currentRoute === "Home" && { color: "#4CAF50" } // Green if active
+        ]}>Home</Text>
       </TouchableOpacity>
     </View>
   );
 };
+<SafeAreaView style={styles.bottomNavContainer}>
+  <View style={styles.bottomNav}>
+    {/* Buttons */}
+  </View>
+</SafeAreaView>
 
 const styles = StyleSheet.create({
   bottomNav: {
@@ -36,6 +41,13 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  bottomNavContainer: {
+    backgroundColor: "#282c34",
+  },
+  bottomNav: {
+    flexDirection: "row",
+    height: 60,
   },
 });
 

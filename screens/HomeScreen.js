@@ -1,97 +1,52 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Image, Alert } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 const HomeScreen = ({ navigation }) => {
-  // State to manage news
   const [newsList, setNewsList] = useState([]);
   const [newsText, setNewsText] = useState('');
-
-  // State for Memory Lane photos
   const [selectedPhotos, setSelectedPhotos] = useState([]);
 
-  // Hover state for remove buttons (for web)
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
-  // Function to add news
-  const addNews = () => {
-    if (newsText.trim()) {
-      setNewsList([...newsList, newsText]);
-      setNewsText(''); // Clear the input field
-    }
-  };
-
-  // Function to remove a news item
-  const removeNews = (index) => {
-    const updatedNews = [...newsList];
-    updatedNews.splice(index, 1);
-    setNewsList(updatedNews);
-  };
-
   // Function to select photos from gallery
-  const selectPhotos = () => {
-    launchImageLibrary({ mediaType: 'photo', selectionLimit: 0 }, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        Alert.alert('Error', response.errorMessage);
-      } else {
-        const selectedImages = response.assets.map((asset) => asset.uri);
-        setSelectedPhotos([...selectedPhotos, ...selectedImages]);
-      }
-    });
-  };
+  const selectPhotos = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert("Permission to access gallery is required!");
+      return;
+    }
 
-  // Function to remove a selected photo
-  const removePhoto = (index) => {
-    const updatedPhotos = [...selectedPhotos];
-    updatedPhotos.splice(index, 1);
-    setSelectedPhotos(updatedPhotos);
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedPhotos([...selectedPhotos, ...result.assets.map(asset => asset.uri)]);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
 
-      {/* Memory Lane Section */}
+      {/* Memory Lane Section (Moved Down) */}
       <View style={styles.memoryLaneSection}>
-        <Text style={styles.memoryLaneTitle}>Memory Lane</Text>
-
-        {/* Button to select photos */}
-        <TouchableOpacity style={styles.addButton} onPress={selectPhotos}>
-          <Text style={styles.buttonText}>Select Photos</Text>
+        <Text style={styles.sectionTitle}>Memory Lane</Text>
+        <TouchableOpacity style={styles.smallButton} onPress={selectPhotos}>
+          <Text style={styles.buttonText}> Select Photos</Text>
         </TouchableOpacity>
-
-        {/* Display selected photos */}
         <ScrollView horizontal style={styles.photoList}>
           {selectedPhotos.map((photo, index) => (
             <View key={index} style={styles.photoContainer}>
               <Image source={{ uri: photo }} style={styles.photo} />
-              <TouchableOpacity
-                style={styles.removeButton}
-                onPress={() => removePhoto(index)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                <Text
-                  style={[
-                    styles.removeText,
-                    hoveredIndex === index && styles.removeTextHover,
-                  ]}
-                >
-                  ×
-                </Text>
-              </TouchableOpacity>
             </View>
           ))}
         </ScrollView>
       </View>
 
-      {/* News Section */}
+      {/* News Section (Moved Down) */}
       <View style={styles.newsSection}>
-        <Text style={styles.newsTitle}>News</Text>
-
-        {/* Input field to add news */}
+        <Text style={styles.sectionTitle}> News</Text>
         <TextInput
           style={styles.input}
           value={newsText}
@@ -99,51 +54,28 @@ const HomeScreen = ({ navigation }) => {
           placeholder="Enter news here"
           placeholderTextColor="#888"
         />
-        
-        <TouchableOpacity style={styles.addButton} onPress={addNews}>
-          <Text style={styles.buttonText}>Add News</Text>
+        <TouchableOpacity style={styles.smallButton} onPress={() => setNewsList([...newsList, newsText])}>
+          <Text style={styles.buttonText}> Add News</Text>
         </TouchableOpacity>
-
-        {/* Display news items */}
         <ScrollView style={styles.newsList}>
           {newsList.map((news, index) => (
             <View key={index} style={styles.newsItem}>
               <Text style={styles.newsText}>{news}</Text>
-              <TouchableOpacity
-                onPress={() => removeNews(index)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                <View
-                  style={[
-                    styles.removeCircle,
-                    hoveredIndex === index && styles.removeCircleHover,
-                  ]}
-                >
-                  <Text style={styles.removeText}>×</Text>
-                </View>
-              </TouchableOpacity>
             </View>
           ))}
         </ScrollView>
       </View>
 
-      {/* Bottom Navigation with Home and Dashboard buttons */}
+      {/* Bottom Navigation - Aligned with Light Sky Blue Theme */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={[styles.navButton, { backgroundColor: "#0099ff" }]}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Text style={styles.buttonText}>🏠 Home</Text>
+        <TouchableOpacity style={[styles.navButton, styles.homeButton]} onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.navText}>🏠</Text> 
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.navButton, { backgroundColor: "#ff6600" }]}
-          onPress={() => navigation.navigate('Dashboard')}
-        >
-          <Text style={styles.buttonText}>📊 Dashboard</Text>
+        <TouchableOpacity style={[styles.navButton, styles.dashboardButton]} onPress={() => navigation.navigate('Dashboard')}>
+          <Text style={styles.navText}>🛠️</Text>
         </TouchableOpacity>
       </View>
+      
     </View>
   );
 };
@@ -151,61 +83,42 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#87CEFA", // Light Sky Blue background color
-    justifyContent: "space-between", // Space content at top and bottom
-    paddingBottom: 70, // Padding for bottom navigation
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 20,
-    alignSelf: "center",
+    backgroundColor: "#87CEFA", // Light Sky Blue background
+    paddingBottom: 70,
+    paddingHorizontal: 10,
   },
   memoryLaneSection: {
     padding: 15,
-    backgroundColor: "#87CEFA", // Light Sky Blue background for Memory Lane
-    marginBottom: 15,
+    backgroundColor: "#87CEFA",
+    marginTop: 80, // Moved down
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  memoryLaneTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 10,
   },
   newsSection: {
     padding: 15,
-    backgroundColor: "#87CEFA", // Light Sky Blue background for News
-    marginBottom: 15,
+    backgroundColor: "#87CEFA",
+    marginTop: 20, // Moved down
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
   },
-  newsTitle: {
-    fontSize: 20,
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 10,
   },
   input: {
-    height: 40,
+    height: 35,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     paddingLeft: 10,
     color: "#333",
     marginBottom: 10,
+    fontSize: 14,
   },
-  addButton: {
+  smallButton: {
     backgroundColor: "#4CAF50",
-    padding: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 10,
@@ -213,82 +126,63 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
+  },
+  photoList: {
+    flexDirection: "row",
+    marginTop: 10,
+  },
+  photoContainer: {
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  photo: {
+    width: 70,
+    height: 70,
+    borderRadius: 8,
   },
   newsList: {
     maxHeight: 200,
   },
   newsItem: {
     backgroundColor: "#f4f4f4",
-    padding: 10,
-    marginBottom: 10,
+    padding: 8,
+    marginBottom: 8,
     borderRadius: 8,
   },
   newsText: {
     color: "#333",
-    fontSize: 16,
-  },
-  removeText: {
-    color: "#ff6f61",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  removeTextHover: {
-    color: "#ff4500", // Change color on hover
-  },
-  removeCircle: {
-    backgroundColor: "#ff6f61",
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  removeCircleHover: {
-    backgroundColor: "#ff4500", // Change color on hover
-  },
-  photoList: {
-    flexDirection: 'row',
-    marginTop: 10,
-    flexWrap: 'wrap',
-  },
-  photoContainer: {
-    marginRight: 10,
-    position: 'relative',
-    marginBottom: 10,
-  },
-  photo: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-  },
-  removeButton: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    backgroundColor: '#ff6f61',
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    fontSize: 14,
   },
   bottomNav: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 15,
-    backgroundColor: "#333333",
+    justifyContent: "space-evenly", // Even spacing
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#87CEFA", // Light Sky Blue theme
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
   },
   navButton: {
-    flex: 1,
-    padding: 15,
-    borderRadius: 8,
+    width: 55, // Circular
+    height: 55, // Circular
+    borderRadius: 27.5, // Make it a circle
     alignItems: "center",
-    marginHorizontal: 5,
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF", // White for a pro feel
+    elevation: 5, // Slight shadow effect
+  },
+  homeButton: {
+    backgroundColor: "#FFFFFF",
+  },
+  dashboardButton: {
+    backgroundColor: "#FFFFFF",
+  },
+  navText: {
+    color: "#000", // Darker text for better visibility
+    fontSize: 24,
   },
 });
 
